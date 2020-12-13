@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.web.mapper.test.TestUsersMapper">
+    
+    <resultMap type="com.ruoyi.web.pojo.test.TestUsers" id="TestUsersResult">
+        <result property="id"    column="id"    />
+        <result property="name"    column="name"    />
+        <result property="age"    column="age"    />
+        <result property="address"    column="address"    />
+    </resultMap>
+
+    <sql id="selectTestUsersVo">
+        select id, name, age, address from test_users
+    </sql>
+
+    <select id="selectTestUsersList" parameterType="com.ruoyi.web.pojo.test.TestUsers" resultMap="TestUsersResult">
+        <include refid="selectTestUsersVo"/>
+        <where>  
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="age != null "> and age = #{age}</if>
+            <if test="address != null  and address != ''"> and address = #{address}</if>
+        </where>
+    </select>
+    
+    <select id="selectTestUsersById" parameterType="Long" resultMap="TestUsersResult">
+        <include refid="selectTestUsersVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertTestUsers" parameterType="com.ruoyi.web.pojo.test.TestUsers" useGeneratedKeys="true" keyProperty="id">
+        insert into test_users
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="name != null">name,</if>
+            <if test="age != null">age,</if>
+            <if test="address != null">address,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="name != null">#{name},</if>
+            <if test="age != null">#{age},</if>
+            <if test="address != null">#{address},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTestUsers" parameterType="com.ruoyi.web.pojo.test.TestUsers">
+        update test_users
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="name != null">name = #{name},</if>
+            <if test="age != null">age = #{age},</if>
+            <if test="address != null">address = #{address},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteTestUsersById" parameterType="Long">
+        delete from test_users where id = #{id}
+    </delete>
+
+    <delete id="deleteTestUsersByIds" parameterType="String">
+        delete from test_users where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+</mapper>
